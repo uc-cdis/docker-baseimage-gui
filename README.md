@@ -10,10 +10,7 @@ on the client side) or via any VNC client.
 
    * [A minimal docker baseimage to ease creation of X graphical application containers](#a-minimal-docker-baseimage-to-ease-creation-of-x-graphical-application-containers)
       * [Table of Content](#table-of-content)
-      * [Images](#images)
-         * [Content](#content)
-         * [Versioning](#versioning)
-         * [Tags](#tags)
+      * [Content](#content)
       * [Getting started](#getting-started)
       * [Environment Variables](#environment-variables)
       * [Config Directory](#config-directory)
@@ -45,67 +42,7 @@ on the client side) or via any VNC client.
          * [Maximizing Only the Main Window](#maximizing-only-the-main-window)
          * [S6 Overlay Documentation](#s6-overlay-documentation)
 
-## Images
-Different docker images are available:
-
-| Base distribution  | Tag              | Size |
-|--------------------|------------------|------|
-| [Alpine 3.5]       | alpine-3.5       | [![](https://images.microbadger.com/badges/image/jlesage/baseimage-gui:alpine-3.5.svg)](http://microbadger.com/#/images/jlesage/baseimage-gui:alpine-3.5 "Get your own image badge on microbadger.com") |
-| [Alpine 3.6]       | alpine-3.6       | [![](https://images.microbadger.com/badges/image/jlesage/baseimage-gui:alpine-3.6.svg)](http://microbadger.com/#/images/jlesage/baseimage-gui:alpine-3.6 "Get your own image badge on microbadger.com") |
-| [Alpine 3.7]       | alpine-3.7       | [![](https://images.microbadger.com/badges/image/jlesage/baseimage-gui:alpine-3.7.svg)](http://microbadger.com/#/images/jlesage/baseimage-gui:alpine-3.7 "Get your own image badge on microbadger.com") |
-| [Alpine 3.8]       | alpine-3.8       | [![](https://images.microbadger.com/badges/image/jlesage/baseimage-gui:alpine-3.8.svg)](http://microbadger.com/#/images/jlesage/baseimage-gui:alpine-3.8 "Get your own image badge on microbadger.com") |
-| [Alpine 3.9]       | alpine-3.9       | [![](https://images.microbadger.com/badges/image/jlesage/baseimage-gui:alpine-3.9.svg)](http://microbadger.com/#/images/jlesage/baseimage-gui:alpine-3.9 "Get your own image badge on microbadger.com") |
-| [Alpine 3.10]      | alpine-3.10      | [![](https://images.microbadger.com/badges/image/jlesage/baseimage-gui:alpine-3.10.svg)](http://microbadger.com/#/images/jlesage/baseimage-gui:alpine-3.10 "Get your own image badge on microbadger.com") |
-| [Alpine 3.11]      | alpine-3.11      | [![](https://images.microbadger.com/badges/image/jlesage/baseimage-gui:alpine-3.11.svg)](http://microbadger.com/#/images/jlesage/baseimage-gui:alpine-3.11 "Get your own image badge on microbadger.com") |
-| [Alpine 3.12]      | alpine-3.12      | [![](https://images.microbadger.com/badges/image/jlesage/baseimage-gui:alpine-3.12.svg)](http://microbadger.com/#/images/jlesage/baseimage-gui:alpine-3.12 "Get your own image badge on microbadger.com") |
-| [Alpine 3.5]       | alpine-3.5-glibc | [![](https://images.microbadger.com/badges/image/jlesage/baseimage-gui:alpine-3.5-glibc.svg)](http://microbadger.com/#/images/jlesage/baseimage-gui:alpine-3.5-glibc "Get your own image badge on microbadger.com") |
-| [Alpine 3.6]       | alpine-3.6-glibc | [![](https://images.microbadger.com/badges/image/jlesage/baseimage-gui:alpine-3.6-glibc.svg)](http://microbadger.com/#/images/jlesage/baseimage-gui:alpine-3.6-glibc "Get your own image badge on microbadger.com") |
-| [Alpine 3.7]       | alpine-3.7-glibc | [![](https://images.microbadger.com/badges/image/jlesage/baseimage-gui:alpine-3.7-glibc.svg)](http://microbadger.com/#/images/jlesage/baseimage-gui:alpine-3.7-glibc "Get your own image badge on microbadger.com") |
-| [Alpine 3.8]       | alpine-3.8-glibc | [![](https://images.microbadger.com/badges/image/jlesage/baseimage-gui:alpine-3.8-glibc.svg)](http://microbadger.com/#/images/jlesage/baseimage-gui:alpine-3.8-glibc "Get your own image badge on microbadger.com") |
-| [Alpine 3.9]       | alpine-3.9-glibc | [![](https://images.microbadger.com/badges/image/jlesage/baseimage-gui:alpine-3.9-glibc.svg)](http://microbadger.com/#/images/jlesage/baseimage-gui:alpine-3.9-glibc "Get your own image badge on microbadger.com") |
-| [Alpine 3.10]       | alpine-3.10-glibc | [![](https://images.microbadger.com/badges/image/jlesage/baseimage-gui:alpine-3.10-glibc.svg)](http://microbadger.com/#/images/jlesage/baseimage-gui:alpine-3.10-glibc "Get your own image badge on microbadger.com") |
-| [Alpine 3.11]       | alpine-3.11-glibc | [![](https://images.microbadger.com/badges/image/jlesage/baseimage-gui:alpine-3.11-glibc.svg)](http://microbadger.com/#/images/jlesage/baseimage-gui:alpine-3.11-glibc "Get your own image badge on microbadger.com") |
-| [Alpine 3.12]       | alpine-3.12-glibc | [![](https://images.microbadger.com/badges/image/jlesage/baseimage-gui:alpine-3.12-glibc.svg)](http://microbadger.com/#/images/jlesage/baseimage-gui:alpine-3.12-glibc "Get your own image badge on microbadger.com") |
-| [Debian 8]         | debian-8         | [![](https://images.microbadger.com/badges/image/jlesage/baseimage-gui:debian-8.svg)](http://microbadger.com/#/images/jlesage/baseimage-gui:debian-8/ "Get your own image badge on microbadger.com") |
-| [Debian 9]         | debian-9         | [![](https://images.microbadger.com/badges/image/jlesage/baseimage-gui:debian-9.svg)](http://microbadger.com/#/images/jlesage/baseimage-gui:debian-9/ "Get your own image badge on microbadger.com") |
-| [Debian 10]        | debian-10        | [![](https://images.microbadger.com/badges/image/jlesage/baseimage-gui:debian-10.svg)](http://microbadger.com/#/images/jlesage/baseimage-gui:debian-10/ "Get your own image badge on microbadger.com") |
-| [Ubuntu 16.04 LTS] | ubuntu-16.04     | [![](https://images.microbadger.com/badges/image/jlesage/baseimage-gui:ubuntu-16.04.svg)](http://microbadger.com/#/images/jlesage/baseimage-gui:ubuntu-16.04 "Get your own image badge on microbadger.com") |
-| [Ubuntu 18.04 LTS] | ubuntu-18.04     | [![](https://images.microbadger.com/badges/image/jlesage/baseimage-gui:ubuntu-18.04.svg)](http://microbadger.com/#/images/jlesage/baseimage-gui:ubuntu-18.04 "Get your own image badge on microbadger.com") |
-
-[Alpine 3.5]: https://alpinelinux.org
-[Alpine 3.6]: https://alpinelinux.org
-[Alpine 3.7]: https://alpinelinux.org
-[Alpine 3.8]: https://alpinelinux.org
-[Alpine 3.9]: https://alpinelinux.org
-[Alpine 3.10]: https://alpinelinux.org
-[Alpine 3.11]: https://alpinelinux.org
-[Alpine 3.12]: https://alpinelinux.org
-[Debian 8]: https://www.debian.org/releases/jessie/
-[Debian 9]: https://www.debian.org/releases/stretch/
-[Debian 10]: https://www.debian.org/releases/buster/
-[Ubuntu 16.04 LTS]: http://releases.ubuntu.com/16.04/
-[Ubuntu 18.04 LTS]: http://releases.ubuntu.com/18.04/
-
-Due to its size, the `Alpine` image is recommended.  However, it may be harder
-to integrate your application (especially third party ones without source code),
-because:
- 1. Packages repository may not be as complete as `Ubuntu`/`Debian`.
- 2. Third party applications may not support `Alpine`.
- 3. The `Alpine` distribution uses the [musl] C standard library instead of
- GNU C library ([glibc]).
-
-Note that using the `Alpine` image with glibc integrated (`alpine-3.5-glibc`
-tag) may ease integration of applications.
-
-The next choice is to use the `Debian` image.  It provides a great compatibility
-and its size is smaller than the `Ubuntu` one.  Finally, if for any reason you
-prefer an `Ubuntu` image, one based on the stable `16.04 LTS` version is
-provided.
-
-[musl]: https://www.musl-libc.org/
-[glibc]: https://www.gnu.org/software/libc/
-
-### Content
+## Content
 Here are the main components of the baseimage:
   * [S6-overlay], a process supervisor for containers.
   * [x11vnc], a X11 VNC server.
@@ -124,25 +61,6 @@ Here are the main components of the baseimage:
 [noVNC]: https://github.com/novnc/noVNC
 [NGINX]: https://www.nginx.com
 [stunnel]: https://www.stunnel.org
-
-### Versioning
-
-Images are versioned.  Version number is in the form `MAJOR.MINOR.PATCH`, where
-an increment of the:
-  - MAJOR version indicates that a backwards-incompatible change has been done.
-  - MINOR version indicates that functionality has been added in a backwards-compatible manner.
-  - PATCH version indicates that a bug fix has been done in a backwards-compatible manner.
-
-### Tags
-
-For each distribution-specific image, multiple tags are available:
-
-| Tag | Description |
-|-----|-------------|
-| distro-vX.Y.Z | Exact version of the image. |
-| distro-vX.Y   | Latest version of a specific minor version of the image. |
-| distro-vX     | Latest version of a specific major version of the image. |
-| distro        | Latest version of the image. |
 
 ## Getting started
 The `Dockerfile` for your application can be very simple, as only three things

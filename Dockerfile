@@ -5,11 +5,12 @@
 #
 
 # Pull base image.
-FROM jlesage/baseimage:debian-10-v2.4.4
+FROM jlesage/baseimage:alpine-3.12-glibc-v2.4.4
 
 # Define software versions.
 ARG LIBVNCSERVER_VERSION=9029b86
 ARG X11VNC_VERSION=29597a9
+ARG STUNNEL_VERSION=5.44
 ARG NOVNC_VERSION=fa559b3
 ARG BOOTSTRAP_VERSION=3.3.7
 ARG FONTAWESOME_VERSION=4.7.0
@@ -19,6 +20,7 @@ ARG JQUERY_UI_TOUCH_PUNCH_VERSION=4bc0091
 # Define software download URLs.
 ARG LIBVNCSERVER_URL=https://github.com/jlesage/libvncserver/archive/${LIBVNCSERVER_VERSION}.tar.gz
 ARG X11VNC_URL=https://github.com/jlesage/x11vnc/archive/${X11VNC_VERSION}.tar.gz
+ARG STUNNEL_URL=https://www.usenix.org.uk/mirrors/stunnel/archive/5.x/stunnel-${STUNNEL_VERSION}.tar.gz
 ARG NOVNC_URL=https://github.com/jlesage/novnc/archive/${NOVNC_VERSION}.tar.gz
 ARG BOOTSTRAP_URL=https://github.com/twbs/bootstrap/releases/download/v${BOOTSTRAP_VERSION}/bootstrap-${BOOTSTRAP_VERSION}-dist.zip
 ARG FONTAWESOME_URL=https://fontawesome.com/v${FONTAWESOME_VERSION}/assets/font-awesome-${FONTAWESOME_VERSION}.zip
@@ -28,32 +30,17 @@ ARG JQUERY_UI_TOUCH_PUNCH_URL=https://raw.github.com/furf/jquery-ui-touch-punch/
 # Define working directory.
 WORKDIR /tmp
 
-# Install the nodejs PPA.
-RUN \
-    add-pkg --virtual build-dependencies curl ca-certificates gnupg && \
-    . /etc/os-release && \
-    curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key --keyring /etc/apt/trusted.gpg.d/nodesource.gpg add - && \
-    echo "deb http://deb.nodesource.com/node_12.x $VERSION_CODENAME main" > /etc/apt/sources.list.d/nodesource.list && \
-    echo "deb-src http://deb.nodesource.com/node_12.x $VERSION_CODENAME main" >> /etc/apt/sources.list.d/nodesource.list && \
-    # Cleanup
-    del-pkg build-dependencies && \
-    rm -rf /tmp/* /tmp/.[!.]*
-
 # Compile x11vnc.
 RUN \
     add-pkg --virtual build-dependencies \
             curl \
-            ca-certificates \
-            build-essential \
+            build-base \
             autoconf \
             automake \
             libtool \
-            pkg-config \
-            zlib1g-dev \
             libx11-dev \
             libxtst-dev \
-            libxext-dev \
-            libjpeg-dev \
+            libjpeg-turbo-dev \
             libpng-dev \
             libxinerama-dev \
             libxdamage-dev \
@@ -89,34 +76,53 @@ RUN \
     del-pkg build-dependencies && \
     rm -rf /tmp/* /tmp/.[!.]*
 
+# Compile stunnel
+RUN \
+    add-pkg --virtual build-dependencies \
+            curl \
+            build-base \
+            openssl-dev \
+            && \
+    # Download sources
+    mkdir stunnel && \
+    curl -# -L ${STUNNEL_URL} | tar -xz --strip 1 -C stunnel && \
+    # Compile stunnel
+    cd stunnel && \
+    ./configure && \
+    make && \
+    find . && \
+    cd .. && \
+    # Install binaries
+    strip stunnel/src/stunnel && \
+    cp -v stunnel/src/stunnel /usr/bin/ && \
+    # Cleanup
+    del-pkg build-dependencies && \
+    rm -rf /tmp/* /tmp/.[!.]*
+
 # Install packages.
 RUN \
-    apt-get -q update && \
-    LIBPNG="$(apt-cache depends libpng-dev | grep 'Depends: libpng' | awk '{print $2}')" && \
     add-pkg \
         # X11 VNC server dependencies
         openssl \
-        libxtst6 \
-        libxcomposite1 \
-        $LIBPNG \
-        stunnel \
+        libxtst \
+        libxi \
+        libjpeg-turbo \
+        libxcomposite \
         # X virtual framebuffer display server
         xvfb \
-        x11-utils \
+        xdpyinfo \
         # Openbox window manager
-        openbox \ 
-        # For ifconfig
-        net-tools && \
+        openbox \
+        xsetroot \
+        # Font
+        font-croscore && \
     # Remove some unneeded stuff.
-    userdel stunnel4 && \
-    rm -r /var/run/stunnel4 \
-          /var/log/stunnel4 \
-          && \
     rm -rf /var/cache/fontconfig/*
 
 # Install noVNC.
 RUN \
-    add-pkg --virtual build-dependencies curl ca-certificates unzip nodejs && \
+    NODEJS_NPM=$(apk -q --no-cache search npm | head -n1) && \
+    add-pkg --virtual build-dependencies curl ${NODEJS_NPM:-nodejs} && \
     mkdir noVNC && \
     curl -sS -L ${NOVNC_URL} | tar -xz --strip 1 -C noVNC && \
     mkdir -p /opt/novnc/include && \
@@ -168,19 +174,25 @@ RUN \
     rm /etc/nginx/nginx.conf \
        /etc/init.d/nginx \
        /etc/logrotate.d/nginx \
-       /etc/ufw/applications.d/nginx \
-       /etc/default/nginx \
        && \
-    rm -r /etc/nginx/snippets \
-          /etc/nginx/sites-enabled \
-          /etc/nginx/sites-available \
-          /usr/share/nginx \
-          /usr/share/doc/nginx \
+    rm -r /etc/nginx/conf.d \
+          /etc/nginx/modules \
+          /var/lib/nginx/* \
           /var/log/nginx \
+          /var/www \
           && \
-    ln -s /config/log/nginx /var/log/nginx && \
-    ln -s /tmp/nginx /var/lib/nginx && \
+    ln -s /config/log/nginx /var/lib/nginx/logs && \
+    if [ -d /var/tmp/nginx ]; then \
+        # alpine 3.6
+        rm -r /var/tmp/nginx && \
+        ln -s /tmp/nginx /var/tmp/nginx; \
+    else \
+        # alpine 3.5
+        ln -s /tmp/nginx /var/lib/nginx/tmp; \
+    fi && \
     # Adjust user under which nginx will run.
+    userdel nginx && \
+    groupdel www-data && \
     useradd --system \
             --home-dir /dev/null \
             --no-create-home \
@@ -205,7 +217,8 @@ RUN sed-patch "s/UNIQUE_VERSION/$(date | md5sum | cut -c1-10)/g" /opt/novnc/inde
 
 # Minify noVNC UI JS files
 RUN \
-    add-pkg --virtual build-dependencies nodejs && \
+    NODEJS_NPM=$(apk -q --no-cache search nodejs-npm) && \
+    add-pkg --virtual build-dependencies ${NODEJS_NPM:-nodejs} && \
     NOVNC_UI="\
         /opt/novnc/app/modulemgr.js \
         /opt/novnc/app/ui.js \
