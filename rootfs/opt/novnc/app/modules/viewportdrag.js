@@ -40,6 +40,6 @@ var ViewportDragModule = {
 };
 
 /* Add the module. */
-(function() {
-  ModuleMgr.modules['ViewportDrag'] = ViewportDragModule;
-})();
+// (function() {
+//   ModuleMgr.modules['ViewportDrag'] = ViewportDragModule;
+// })();
