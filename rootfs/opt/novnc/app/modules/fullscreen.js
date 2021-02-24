@@ -61,6 +61,6 @@ var FullscreenModule = {
 };
 
 /* Add the module. */
-(function() {
-  ModuleMgr.modules['Fullscreen'] = FullscreenModule;
-})();
+// (function() {
+//   ModuleMgr.modules['Fullscreen'] = FullscreenModule;
+// })();
