@@ -141,6 +141,6 @@ var HideableNavbarModule = {
 };
 
 /* Add the module. */
-(function() {
-  ModuleMgr.modules['HideableNavbar'] = HideableNavbarModule;
-})();
+// (function() {
+//   ModuleMgr.modules['HideableNavbar'] = HideableNavbarModule;
+// })();
