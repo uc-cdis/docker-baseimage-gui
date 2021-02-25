@@ -61,6 +61,7 @@ var FullscreenModule = {
 };
 
 /* Add the module. */
-(function() {
-  ModuleMgr.modules['Fullscreen'] = FullscreenModule;
-})();
+// Hide for VA UI/UX improvements
+// (function() {
+//   ModuleMgr.modules['Fullscreen'] = FullscreenModule;
+// })();

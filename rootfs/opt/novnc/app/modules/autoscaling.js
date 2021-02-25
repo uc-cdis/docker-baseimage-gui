@@ -101,6 +101,7 @@ var AutoScalingModule = {
 };
 
 /* Add the module. */
-(function() {
-  ModuleMgr.modules['AutoScaling'] = AutoScalingModule;
-})();
+// Hide for VA UI/UX improvements
+// (function() {
+//   ModuleMgr.modules['AutoScaling'] = AutoScalingModule;
+// })();

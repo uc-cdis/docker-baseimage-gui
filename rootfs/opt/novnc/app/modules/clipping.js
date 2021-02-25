@@ -110,6 +110,7 @@ var ClippingModule = {
 };
 
 /* Add the module. */
-(function() {
-  ModuleMgr.modules['Clipping'] = ClippingModule;
-})();
+// Hide for VA UI/UX improvements
+// (function() {
+//   ModuleMgr.modules['Clipping'] = ClippingModule;
+// })();

@@ -37,7 +37,8 @@ var ClipboardModule = {
     $('#ClearClipboardButton').on('click', this.contentClear);
     $('#SubmitClipboardButton').on('click', this.contentSend);
     // Register the RFB callback.
-    UI.rfb.set_onClipboard(this.contentReceive);
+    // Disabled for VA UI/UX improvements, so user cannot copy things out
+    // UI.rfb.set_onClipboard(this.contentReceive);
   },
 
   deactivate: function() {
@@ -55,12 +56,13 @@ var ClipboardModule = {
    ****************************************************************************/
 
   // Called by the RFB when something is copied to the clipboard.
-  contentReceive: function(rfb, text) {
-    Util.Debug(">> UI.contentReceive: " + text.substr(0,40) + "...");
-    ClipboardModule.clipboardContent = text;
-    $('#clipboard_content').val(text);
-    Util.Debug("<< UI.contentReceive");
-  },
+  // Disabled for VA
+  // contentReceive: function(rfb, text) {
+  //   Util.Debug(">> UI.contentReceive: " + text.substr(0,40) + "...");
+  //   ClipboardModule.clipboardContent = text;
+  //   $('#clipboard_content').val(text);
+  //   Util.Debug("<< UI.contentReceive");
+  // },
 
   // Send clipboard content to the RFB.
   contentSend: function(event) {
