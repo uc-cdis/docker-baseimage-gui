@@ -40,6 +40,7 @@ var ViewportDragModule = {
 };
 
 /* Add the module. */
+// Hide for VA UI/UX improvements
 // (function() {
 //   ModuleMgr.modules['ViewportDrag'] = ViewportDragModule;
 // })();

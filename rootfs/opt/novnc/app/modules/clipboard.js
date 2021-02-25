@@ -37,6 +37,7 @@ var ClipboardModule = {
     $('#ClearClipboardButton').on('click', this.contentClear);
     $('#SubmitClipboardButton').on('click', this.contentSend);
     // Register the RFB callback.
+    // Disabled for VA UI/UX improvements, so user cannot copy things out
     // UI.rfb.set_onClipboard(this.contentReceive);
   },
 
